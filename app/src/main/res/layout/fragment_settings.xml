@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:gravity="center"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:text="Begin Date"
+        android:id="@+id/txtDate"/>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/txtDate"
+        android:id="@+id/etDate"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:text="Sort Order"
+        android:layout_below="@+id/txtDate"
+        android:id="@+id/txtSort"/>
+
+    <Spinner
+        android:id="@+id/spnSort"
+        android:layout_width="wrap_content"
+        android:entries="@array/sort_array"
+        android:prompt="@string/sort_prompt"
+        android:layout_height="20dp"
+        android:layout_toRightOf="@+id/txtSort"
+        android:layout_below="@+id/etDate"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:text="News Desk Values"
+        android:layout_below="@+id/txtSort"
+        android:id="@+id/txtNewsType"/>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/llNews"
+        android:layout_toRightOf="@+id/txtNewsType"
+        android:layout_below="@+id/spnSort">
+
+        <CheckBox android:id="@+id/checkbox_arts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/desk_arts" />
+
+        <CheckBox android:id="@+id/checkbox_fashion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/desk_fashion" />
+
+        <CheckBox android:id="@+id/checkbox_sports"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/desk_sports" />
+    </LinearLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:background="@color/colorBG"
+        android:layout_below="@+id/llNews"/>
+
+</RelativeLayout>
