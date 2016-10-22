@@ -2,26 +2,39 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:gravity="center"
-    android:layout_height="match_parent">
+    android:layout_centerInParent="true"
+    android:layout_height="wrap_content">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:text="Begin Date"
+        android:layout_marginBottom="40dp"
+        android:layout_marginRight="20dp"
+        android:textSize="18dp"
+        android:gravity="center_vertical"
+        android:text="@string/begin_date"
         android:id="@+id/txtDate"/>
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
         android:layout_toRightOf="@+id/txtDate"
+        android:layout_alignTop="@+id/txtDate"
+        android:onClick="onDateBtnClick"
+        android:gravity="center_vertical"
+        android:ems="8"
+        android:hint="@string/select_date"
         android:id="@+id/etDate"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:text="Sort Order"
+        android:layout_marginBottom="40dp"
+        android:layout_marginRight="20dp"
+        android:textSize="18dp"
+        android:text="@string/sort_order"
+        android:gravity="center_vertical"
         android:layout_below="@+id/txtDate"
         android:id="@+id/txtSort"/>
 
@@ -29,15 +42,22 @@
         android:id="@+id/spnSort"
         android:layout_width="wrap_content"
         android:entries="@array/sort_array"
-        android:prompt="@string/sort_prompt"
+        android:prompt="@string/retry"
+        android:layout_marginBottom="40dp"
         android:layout_height="20dp"
+        android:textSize="18dp"
         android:layout_toRightOf="@+id/txtSort"
+        android:layout_alignTop="@+id/txtSort"
+        android:layout_alignEnd="@+id/etDate"
+        android:gravity="center_vertical"
         android:layout_below="@+id/etDate"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="40dp"
+        android:layout_marginRight="20dp"
+        android:textSize="18dp"
         android:text="News Desk Values"
         android:layout_below="@+id/txtSort"
         android:id="@+id/txtNewsType"/>
@@ -48,6 +68,7 @@
         android:layout_height="match_parent"
         android:id="@+id/llNews"
         android:layout_toRightOf="@+id/txtNewsType"
+        android:layout_alignTop="@+id/txtNewsType"
         android:layout_below="@+id/spnSort">
 
         <CheckBox android:id="@+id/checkbox_arts"
@@ -66,11 +87,5 @@
             android:text="@string/desk_sports" />
     </LinearLayout>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Save"
-        android:background="@color/colorBG"
-        android:layout_below="@+id/llNews"/>
 
 </RelativeLayout>

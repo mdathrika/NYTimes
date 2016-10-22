@@ -1,10 +1,13 @@
 package com.codepath.nytimes.serviceclient;
 
+import com.codepath.nytimes.models.Settings;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
@@ -16,15 +19,39 @@ public class NYSearchClient {
     private String beginDate;
     private List<String> filters;
 
+    private String searchQuery;
+    private int pageNumber = 0;
+
     private AsyncHttpClient client = new AsyncHttpClient();
 
     private String API_KEY = "a64b1a0b931941008b2b0a29f47b4313";
     private String API_URL = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
 
+    String months[] = {"01","02","03","04","05","06","07","08","09","10","11","12"};
 
 
     public NYSearchClient() {
 
+    }
+
+    public NYSearchClient(Settings settings) {
+        this.sortOrder = settings.getSortOrder();
+        this.beginDate = null;
+
+        if(settings.getBeginDate() != null) {
+            Calendar date = new GregorianCalendar();
+            date.setTime(settings.getBeginDate());
+            int year = date.get(Calendar.YEAR);  // 2012
+            String month = months[date.get(Calendar.MONTH)];  // 9 - October!!!
+            int day = date.get(Calendar.DAY_OF_MONTH);  // 5
+
+            System.out.println("****YEAR****"+year);
+            System.out.println("****Month****"+month);
+            System.out.println("****Day****"+day);
+            this.beginDate = ""+year+""+month+""+day;
+        }
+
+        this.filters = settings.getNewsCategory();
     }
 
     public NYSearchClient(String sortOrder, String beginDate, List<String> filters) {
@@ -42,9 +69,11 @@ public class NYSearchClient {
     }
 
     public void searchArticle(String query, JsonHttpResponseHandler handler) {
+        searchQuery = query;
         RequestParams params = new RequestParams();
         params.add("api-key", API_KEY);
         params.add("q", query);
+        params.add("page", Integer.toString(pageNumber));
         if(filters != null && filters.size() > 0) {
             String filter = "news_desk:(";
             for(String filt : filters) {
@@ -60,6 +89,12 @@ public class NYSearchClient {
         if(sortOrder != null)
             params.add("sort", sortOrder);
 
+        System.out.println("********Params::: "+params.toString());
         client.get(API_URL, params, handler);
+    }
+
+    public void getNextPage(int pageNumber, JsonHttpResponseHandler handler) {
+        this.pageNumber = pageNumber;
+        searchArticle(searchQuery, handler);
     }
 }

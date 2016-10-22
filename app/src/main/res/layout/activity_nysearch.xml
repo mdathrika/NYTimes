@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+
+    android:background="?android:attr/selectableItemBackground"
     tools:context=".activities.NYSearchActivity">
 
     <include layout="@layout/toolbar_common"
@@ -11,23 +12,11 @@
         android:layout_height="wrap_content"
         android:id="@+id/srch_toolbar" />
 
-    <ListView
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvArticle"
+        android:layout_below="@+id/srch_toolbar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/srch_toolbar"
-        android:divider="@color/colorBG"
-        android:dividerHeight="1dp"
-        android:id="@+id/lvArticle">
-    </ListView>
-
-    <!--GridView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/gvArticle"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:numColumns="3"
-        android:layout_below="@+id/srch_toolbar"
-        android:stretchMode="columnWidth"
-        android:gravity="center"
-        /-->
+        android:background="@android:color/white"/>
 
 </RelativeLayout>
