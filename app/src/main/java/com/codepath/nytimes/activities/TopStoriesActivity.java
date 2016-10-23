@@ -10,13 +10,11 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.customtabs.CustomTabsIntent;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -25,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.OvershootInterpolator;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -32,9 +31,9 @@ import android.widget.Spinner;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.codepath.nytimes.R;
-import com.codepath.nytimes.Utils.Helper;
 import com.codepath.nytimes.adapters.ArticleAdapter;
 import com.codepath.nytimes.adapters.ItemClickSupport;
+import com.codepath.nytimes.decoration.DividerItemDecoration;
 import com.codepath.nytimes.decoration.SpacesItemDecoration;
 import com.codepath.nytimes.listeners.EndlessRecyclerViewScrollListener;
 import com.codepath.nytimes.listeners.NYSearchResponseHandler;
@@ -42,12 +41,7 @@ import com.codepath.nytimes.listeners.NYTopStoriesResponseHandler;
 import com.codepath.nytimes.models.Article;
 import com.codepath.nytimes.models.Settings;
 import com.codepath.nytimes.serviceclient.NYSearchClient;
-import com.loopj.android.http.JsonHttpResponseHandler;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -57,10 +51,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import cz.msebera.android.httpclient.Header;
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
-public class NYSearchActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener{
+public class TopStoriesActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
     private NYSearchClient client;
     private RecyclerView recyclerView;
@@ -76,19 +69,19 @@ public class NYSearchActivity extends AppCompatActivity implements DatePickerDia
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_nysearch);
-
+        setContentView(R.layout.activity_top_stories);
 
         final Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_action_share);
-
-        view = this.findViewById(android.R.id.content);
 
         final Activity activity = this;
         context = this;
 
-        recyclerView = (RecyclerView) findViewById(R.id.rvArticle);
+        recyclerView = (RecyclerView) findViewById(R.id.rvTopArticles);
 
-        articleAdapter = new ArticleAdapter(this, articles, R.layout.item_article_result_1, R.layout.item_article_result_2);
+
+        articleAdapter = new ArticleAdapter(this, articles,R.layout.item_top_article_result_1, R.layout.item_top_article_result_2);
+
+        topStories();
 
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener(
                 new ItemClickSupport.OnItemClickListener() {
@@ -116,40 +109,35 @@ public class NYSearchActivity extends AppCompatActivity implements DatePickerDia
                 }
         );
 
-        StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(staggeredGridLayoutManager);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
+        //StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(layoutManager);
+
+        //recyclerView.addItemDecoration(new SlideInUpAnimator(new OvershootInterpolator(1f)));
         recyclerView.addItemDecoration(new SpacesItemDecoration(16));
-        recyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(staggeredGridLayoutManager) {
+        //recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
+
+        recyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
                 System.out.println("******Firing nextpage***** "+page);
-                client.getNextPage(page, new NYSearchResponseHandler(articleAdapter, view, articles, false));
+                //client.getNextPage(page, new NYSearchResponseHandler(articleAdapter, view, articles, false));
             }
         });
 
-        recyclerView.setItemAnimator(new SlideInUpAnimator());
+        recyclerView.setItemAnimator(new SlideInUpAnimator(new OvershootInterpolator(1f)));
         recyclerView.setAdapter(articleAdapter);
 
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.srch_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.top_toolbar);
         setSupportActionBar(toolbar);
-
-        Intent intent = getIntent();
-        String query = intent.getStringExtra("query");
-        //SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        search(query);
     }
 
-
-    private void search(final String query) {
+    private void topStories() {
         client = new NYSearchClient(settings);
         recyclerView.scrollToPosition(0);
-        client.searchArticle(query, new NYSearchResponseHandler(articleAdapter, view, articles, true));
+        client.topStories(new NYTopStoriesResponseHandler(articleAdapter, view, articles, true));
     }
-
-
-
 
 
     @Override
@@ -159,11 +147,12 @@ public class NYSearchActivity extends AppCompatActivity implements DatePickerDia
 
         MenuItem searchItem = menu.findItem(R.id.action_search);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                search(query);
+                Intent intent = new Intent(context, NYSearchActivity.class);
+                intent.putExtra("query", query);
+                startActivity(intent);
                 searchView.clearFocus();
                 return true;
             }

@@ -9,6 +9,7 @@ import com.codepath.nytimes.Utils.Helper;
 import com.codepath.nytimes.adapters.ArticleAdapter;
 import com.codepath.nytimes.models.Article;
 import com.codepath.nytimes.models.NYTimesSearchResponse;
+import com.codepath.nytimes.models.NYTimesTopStoriesResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.loopj.android.http.TextHttpResponseHandler;
@@ -20,14 +21,14 @@ import cz.msebera.android.httpclient.Header;
 /**
  * Created by mdathrika on 10/21/16.
  */
-public class NYSearchResponseHandler extends TextHttpResponseHandler {
+public class NYTopStoriesResponseHandler extends TextHttpResponseHandler {
 
     private ArticleAdapter articleAdapter;
     private View view;
     private List<Article> articles;
     private boolean clear;
 
-    public NYSearchResponseHandler(ArticleAdapter articleAdapter, View view, List<Article> articles, boolean clear) {
+    public NYTopStoriesResponseHandler(ArticleAdapter articleAdapter, View view, List<Article> articles, boolean clear) {
         this.articleAdapter = articleAdapter;
         this.view = view;
         this.articles = articles;
@@ -37,7 +38,7 @@ public class NYSearchResponseHandler extends TextHttpResponseHandler {
     @Override
     public void onSuccess(int statusCode, Header[] headers, String response) {
         Gson gson = new GsonBuilder().create();
-        NYTimesSearchResponse ny_response = gson.fromJson(response, NYTimesSearchResponse.class);
+        NYTimesTopStoriesResponse ny_response = gson.fromJson(response, NYTimesTopStoriesResponse.class);
 
         final List<Article> Articles = Article.fromResponse(ny_response);
 

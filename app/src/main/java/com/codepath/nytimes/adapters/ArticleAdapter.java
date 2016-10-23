@@ -37,10 +37,14 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
 
     private Context context;
     private List<Article> articles;
+    private final int IMAGE_TITLE = 0, TITLE = 1;
+    private int resource1, resource2;
 
-    public ArticleAdapter(Context context, List<Article> articles) {
+    public ArticleAdapter(Context context, List<Article> articles, int resource1, int resource2) {
         this.context = context;
         this.articles = articles;
+        this.resource1 = resource1;
+        this.resource2 = resource2;
     }
 
     private Context getContext() {
@@ -48,12 +52,32 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
     }
 
     @Override
+    public int getItemViewType(int position) {
+        if (articles.get(position).getThumbnailUrl() == null || articles.get(position).getThumbnailUrl().length() == 0) {
+            return TITLE;
+        } else  {
+            return IMAGE_TITLE;
+        }
+    }
+
+    @Override
     public ArticleAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
-
+        View articleView;
+        switch (viewType) {
+            case IMAGE_TITLE:
+                articleView = inflater.inflate(resource1, parent, false);
+                break;
+            case TITLE:
+                articleView = inflater.inflate(resource2, parent, false);
+                break;
+            default:
+                articleView = inflater.inflate(resource2, parent, false);
+                break;
+        }
         // Inflate the custom layout
-        View articleView = inflater.inflate(R.layout.item_article_result, parent, false);
+
 
         // Return a new holder instance
         ViewHolder viewHolder = new ViewHolder(articleView);
@@ -65,8 +89,17 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
     public void onBindViewHolder(ArticleAdapter.ViewHolder viewHolder, int position) {
         // Get the data model based on position
         Article article = articles.get(position);
-        viewHolder.tvHeadline.setText(article.getHeadline());
-        Glide.with(getContext()).load(Uri.parse(article.getThumbnailUrl())).placeholder(R.drawable.ic_nocover).into(viewHolder.ivCover);
+        switch (viewHolder.getItemViewType()) {
+            case IMAGE_TITLE:
+                viewHolder.tvHeadline.setText(article.getHeadline());
+                Glide.with(getContext()).load(Uri.parse(article.getThumbnailUrl())).placeholder(R.drawable.ic_nocover).into(viewHolder.ivCover);
+                break;
+            case TITLE:
+                viewHolder.tvHeadline.setText(article.getHeadline());
+                break;
+            default:
+                break;
+        }
 
     }
 

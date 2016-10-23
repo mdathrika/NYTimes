@@ -2,13 +2,13 @@ package com.codepath.nytimes.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.text.TextUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by mdathrika on 10/19/16.
@@ -38,7 +38,12 @@ public class Article implements Parcelable {
     }
 
     public String getThumbnailUrl() {
-        return "http://www.nytimes.com/" + thumbnailUrl;
+        if(thumbnailUrl != null && thumbnailUrl.indexOf("http") != 0) {
+            return "http://www.nytimes.com/" + thumbnailUrl;
+        } else {
+            return thumbnailUrl;
+        }
+
     }
 
     public void setThumbnailUrl(String thumbnailUrl) {
@@ -79,7 +84,7 @@ public class Article implements Parcelable {
         }
     };
 
-    public static Article fromJson(JSONObject jsonObject) {
+    /*public static Article fromJson(JSONObject jsonObject) {
         Article article = new Article();
         try {
             // Deserialize json into object fields
@@ -94,6 +99,36 @@ public class Article implements Parcelable {
         }
         // Return new object
         return article;
+    }*/
+
+    public static List<Article> fromResponse(NYTimesSearchResponse response) {
+        List<Article> articles = new ArrayList<>();
+        for(NYTimesSearchResponse.Docs doc : response.getResponse().getDocs()) {
+            Article article = new Article();
+
+            if(doc.getMultimedia() != null && doc.getMultimedia().size() > 0)
+                article.thumbnailUrl = doc.getMultimedia().get(0).url;
+
+            article.webUrl = doc.getWebUrl();
+            article.headline = doc.headline.main;
+            articles.add(article);
+        }
+        return articles;
+    }
+
+    public static List<Article> fromResponse(NYTimesTopStoriesResponse response) {
+        List<Article> articles = new ArrayList<>();
+        for(NYTimesTopStoriesResponse.Article art : response.results) {
+            Article article = new Article();
+
+            if(art.multimedia != null && art.multimedia.size() > 0)
+                article.thumbnailUrl = art.multimedia.get(0).imageUrl;
+
+            article.webUrl = art.url;
+            article.headline = art.title;
+            articles.add(article);
+        }
+        return articles;
     }
 
     // Return comma separated author list when there is more than one author
@@ -113,7 +148,7 @@ public class Article implements Parcelable {
     }
 
     // Decodes array of book json results into business model objects
-    public static ArrayList<Article> fromJson(JSONArray jsonArray) {
+    /*public static ArrayList<Article> fromJson(JSONArray jsonArray) {
         ArrayList<Article> articles = new ArrayList<>(jsonArray.length());
         // Process each result in json array, decode and convert to business
         // object
@@ -131,6 +166,6 @@ public class Article implements Parcelable {
             }
         }
         return articles;
-    }
+    }*/
 
 }

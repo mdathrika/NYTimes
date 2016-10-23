@@ -4,6 +4,7 @@ import com.codepath.nytimes.models.Settings;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.TextHttpResponseHandler;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
@@ -45,9 +46,6 @@ public class NYSearchClient {
             String month = months[date.get(Calendar.MONTH)];  // 9 - October!!!
             int day = date.get(Calendar.DAY_OF_MONTH);  // 5
 
-            System.out.println("****YEAR****"+year);
-            System.out.println("****Month****"+month);
-            System.out.println("****Day****"+day);
             this.beginDate = ""+year+""+month+""+day;
         }
 
@@ -68,7 +66,7 @@ public class NYSearchClient {
         return this;
     }
 
-    public void searchArticle(String query, JsonHttpResponseHandler handler) {
+    public void searchArticle(String query, TextHttpResponseHandler handler) {
         searchQuery = query;
         RequestParams params = new RequestParams();
         params.add("api-key", API_KEY);
@@ -93,8 +91,15 @@ public class NYSearchClient {
         client.get(API_URL, params, handler);
     }
 
-    public void getNextPage(int pageNumber, JsonHttpResponseHandler handler) {
+    public void getNextPage(int pageNumber, TextHttpResponseHandler handler) {
         this.pageNumber = pageNumber;
         searchArticle(searchQuery, handler);
+    }
+
+    public void topStories(TextHttpResponseHandler handler) {
+        RequestParams params = new RequestParams();
+        params.add("api-key", API_KEY);
+
+        client.get("https://api.nytimes.com/svc/topstories/v2/home.json", params, handler);
     }
 }
